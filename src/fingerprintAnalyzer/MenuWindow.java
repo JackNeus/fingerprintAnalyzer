@@ -22,9 +22,9 @@ public class MenuWindow extends Application {
 		final File file1, file2;
 		
 		primaryStage.setTitle("Select fingerprints");
-		
+				
 		GridPane grid = new GridPane();
-		grid.setAlignment(Pos.CENTER);
+		grid.setAlignment(Pos.CENTER_LEFT);
 		grid.setHgap(10);
 		grid.setVgap(10);
 		grid.setPadding(new Insets(25, 25, 25, 25));
@@ -34,14 +34,16 @@ public class MenuWindow extends Application {
 		HBox hbBtn = new HBox(10);
 		hbBtn.setAlignment(Pos.BOTTOM_RIGHT);
 		hbBtn.getChildren().add(btn);
-		grid.add(hbBtn, 2, 4);
+		grid.add(hbBtn, 4, 3);
 		
 		//Title Box
 		Text scenetitle = new Text("Choose files:");
 		scenetitle.setFont(Font.font("Tahoma", FontWeight.NORMAL, 20));
-		grid.add(scenetitle, 0, 0, 2, 1);
+		grid.add(scenetitle, 0, 0, 3, 1);
 
+		//File Selection
 		final FileChooser fileChooser = new FileChooser();
+		
 		final Text fileName1 = new Text();
 		grid.add(fileName1, 1, 1);
 		
@@ -57,7 +59,7 @@ public class MenuWindow extends Application {
 		grid.add(choose1, 0, 1);
 	
 		final Text fileName2 = new Text();
-		grid.add(fileName2, 1, 2);
+		grid.add(fileName2, 3, 2);
 		
 		Button choose2 = new Button ("Fingerprint 2");
 		choose2.setOnAction(new EventHandler<ActionEvent>(){
@@ -71,7 +73,7 @@ public class MenuWindow extends Application {
 		grid.add(choose2, 0, 2);
 		
 		//Misc. 
-		Scene scene = new Scene(grid, 400, 150);
+		Scene scene = new Scene(grid, 400, 175);
 		primaryStage.setScene(scene);
 		primaryStage.show();
 	}
