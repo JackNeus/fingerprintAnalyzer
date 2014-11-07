@@ -28,6 +28,8 @@ public class MenuWindow extends Application {
 	private final static String spaces = "                                                                                               "; //95 spaces
 	private final static String error =  "Please make sure that you have selected two image files.   \nYou may use .jpg, .png, .bmp, and .gif files.";
 	
+	private Window window;
+	
 	public void start(final Stage primaryStage){		
 		primaryStage.setTitle("Select fingerprints");
 				
@@ -50,7 +52,8 @@ public class MenuWindow extends Application {
 		btn.setOnAction(new EventHandler<ActionEvent>(){
 			public void handle(ActionEvent e){
 				if(imageFile(file1) && imageFile(file2)){
-					//Do something
+					window = new Window(file1, file2);
+					window.start(new Stage());
 				}
 				else{
 					errorMsg.setText(error);
@@ -99,7 +102,7 @@ public class MenuWindow extends Application {
 		});
 		grid.add(choose2, 0, 2);
 		
-				//Misc. 
+		//Misc. 
 		Scene scene = new Scene(grid, width, height);
 		primaryStage.setResizable(false);
 		primaryStage.setScene(scene);
@@ -127,7 +130,6 @@ public class MenuWindow extends Application {
 			}
 		}
 		name = name.substring(pos, name.length()).toLowerCase();
-		System.out.println(name);
 		for(int i = 0; i < validExtensions.length; i++){
 			if(name.equals(validExtensions[i])){
 				return true;
