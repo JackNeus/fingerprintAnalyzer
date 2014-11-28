@@ -15,13 +15,13 @@ import javafx.stage.Stage;
 public class Window extends Application {
 
 	private final static int width = 800;
-	private final static int height = 800;
+	private final static int height = 500;
 	
 	private Fingerprint print[] = new Fingerprint[2];
 	
 	public Window(File file1, File file2){
 		print[0] = new Fingerprint(file1);
-		//print[1] = new Fingerprint(path2);
+		//print[1] = new Fingerprint(file2);
 	}
 	
 	@Override
@@ -36,8 +36,8 @@ public class Window extends Application {
 		
 		HBox hb = new HBox(50);
 		ImageView printView[] = new ImageView[2];
-		for(int i = 0; i < 2; i++){
-			printView[i] = new ImageView(print[0].getSrcImg());
+		for(int i = 0; i < 1; i++){
+			printView[i] = new ImageView(print[i].getSrcImg());
 			hb.getChildren().add(printView[i]);
 		}
 		grid.getChildren().add(hb);
@@ -47,5 +47,5 @@ public class Window extends Application {
 		primaryStage.setScene(scene);
 		primaryStage.show();
 	}
-	
+
 }

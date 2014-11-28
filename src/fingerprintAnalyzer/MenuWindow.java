@@ -28,9 +28,18 @@ public class MenuWindow extends Application {
 	private final static String spaces = "                                                                                               "; //95 spaces
 	private final static String error =  "Please make sure that you have selected two image files.   \nYou may use .jpg, .png, .bmp, and .gif files.";
 	
+	//private final static File sampleFile = new File("C:\\Users\\Jack\\Desktop\\fingerprint1.jpg");
+	private final static File sampleFile = new File("C:\\Users\\Jack\\Desktop\\fingerprint2.png");
+	private boolean skipChoice = true;
+	
 	private Window window;
 	
-	public void start(final Stage primaryStage){		
+	public void start(final Stage primaryStage){
+		if(skipChoice){
+			window = new Window(sampleFile, sampleFile);
+			window.start(new Stage());
+			return;
+		}
 		primaryStage.setTitle("Select fingerprints");
 				
 		GridPane grid = new GridPane();
