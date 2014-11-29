@@ -16,30 +16,18 @@ public class Fingerprint{
 	public Fingerprint(File file){
 		System.out.println(file);
 		srcImg = new Image(file.toURI().toString(), goalSize, goalSize, true, true);
-		setup();
 	}
 
 	public Image getSrcImg() {
+		return srcImg;
+	}
+	public Image getBinImg(){
 		return binarize(srcImg);
 	}
-		
-	public void setup(){
-		/*PixelReader p = srcImg.getPixelReader();
-		img = new WritableImage((int)srcImg.getWidth(), (int)srcImg.getHeight());
-		PixelWriter pixelWriter = img.getPixelWriter();
-		
-		for(int y = 0; y < srcImg.getHeight(); y++){
-			for(int x = 0; x < srcImg.getWidth(); x++){
-				Color color = p.getColor(x, y);
-				pixelWriter.setColor(x, y, color);
-			}
-		}*/
-		
-		
-		
-		//http://java-buddy.blogspot.com/2014/06/pixelreader-pixelwriter-and.html
+	public Image getThinImg(){
+		return thin(binarize(srcImg));
 	}
-	
+
 	private WritableImage grayscale(Image img){
 		WritableImage gray = new WritableImage((int)img.getWidth(), (int)img.getHeight());
 		PixelReader imgReader = img.getPixelReader();
@@ -67,8 +55,11 @@ public class Fingerprint{
 		
 		PixelReader imgReader = img.getPixelReader();
 		int intImg[][] = new int[(int)img.getWidth()][(int)img.getHeight()];
-		final int s = 16; //Size of block
+		
+		final int s = (int)img.getWidth() / 8; //Size of block
 		final int t = 15; //Threshold
+		//final int s = (int)img.getWidth() / 8; //Size of block
+		
 		for(int x = 0; x < img.getWidth(); ++x){
 			int sum = 0;
 			for(int y = 0; y < img.getHeight(); ++y){
@@ -81,15 +72,17 @@ public class Fingerprint{
 				}
 			}
 		}
+		
 		for(int x = 0; x < img.getWidth(); ++x){
 			for(int y = 0; y < img.getHeight(); ++y){
 				int x1 = Math.max(0, x - s / 2);
 				int x2 = Math.min((int)img.getWidth() - 1, x + s / 2);
 				int y1 = Math.max(0, y - s / 2);
 				int y2 = Math.min((int)img.getHeight() - 1, y + s / 2);
-				int count = (x2 - x1) * (y2 - y1);
+				int count = (x2 - x1 + 1) * (y2 - y1 + 1);
 				int sum = intImg[x2][y2] - (y1 == 0 ? 0 : intImg[x2][y1 - 1]) - (x1 == 0 ? 0 : intImg[x1 - 1][y2]) + (y1 == 0 || x1 == 0 ? 0 : intImg[x1 - 1][y1 - 1]);
 				int v = (int)(imgReader.getColor(x, y).getRed() * 0xFF);
+				
 				if(v * count <= sum * (100 - t) / 100){
 					imgWriter.setColor(x, y, white);
 				}
@@ -99,6 +92,70 @@ public class Fingerprint{
 			}
 		}
 		return ans;
+	}
+	
+	int dx[] = new int[]{0, 1, 1, 1, 0, -1, -1, -1};
+	int dy[] = new int[]{1, 1, 0, -1, -1, -1, 0, 1};
+	private WritableImage thin(WritableImage img){
+		PixelReader imgReader = img.getPixelReader();
+		int imgArr[][] = new int[(int)img.getWidth()][(int)img.getHeight()];
+		for(int x = 0; x < img.getWidth(); ++x){
+			for(int y = 0; y < img.getHeight(); ++y){
+				Color c = imgReader.getColor(x, y);
+				if((int)c.getRed() == 0){
+					imgArr[x][y] = 1;
+				}
+				else{
+					imgArr[x][y] = 0;
+				}
+			}
+		}
+		for(int code = 0; code <= 1; code++){
+			boolean flag = true;
+			while(flag){
+				flag = false;
+				for(int x = 0; x < img.getWidth(); ++x){
+					for(int y = 0; y < img.getHeight(); ++y){
+						if(imgArr[x][y] == 0) continue;
+						int N = 0, S = 0;
+						int P[] = new int[8];
+						for(int i = 0; i < 8; i++){
+							int nx = x + dx[i];
+							int ny = y + dy[i];
+							if(nx < 0 || ny < 0 || nx >= img.getWidth() || ny >= img.getHeight()){
+								P[i] = -1;
+								continue;
+							}
+							P[i] = imgArr[nx][ny];
+							if(P[i] == 1){
+								N++;
+								if(i > 0 && P[i - 1] == 0) S++;
+							}
+						}
+						if(P[0] == 1 && P[7] == 0) S++;
+
+						if(N >= 2 && N <= 6 && S == 1){
+							if(code == 0 && (P[0] == 0 || P[2] == 0 || P[4] == 0) && P[2] * P[4] * P[6] == 0 || code == 1 && P[0] * P[2] * P[6] == 0 && P[0] * P[4] * P[6] == 0){
+								flag = true;
+								imgArr[x][y] = 0;
+							}
+						}
+					}
+				}
+			}
+		}
+		WritableImage thinned = new WritableImage((int)img.getWidth(), (int)img.getHeight());
+		PixelWriter imgWriter = thinned.getPixelWriter();
+		for(int x = 0; x < img.getWidth(); ++x){
+			for(int y = 0; y < img.getHeight(); ++y){
+				int c = imgArr[x][y];
+				if(c == 0) c = 1;
+				else c = 0;
+				c *= 0xFF;
+				imgWriter.setColor(x, y, Color.rgb(c, c, c));
+			}
+		}
+		return thinned;
 	}
 	
 }

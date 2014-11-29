@@ -14,7 +14,7 @@ import javafx.stage.Stage;
 
 public class Window extends Application {
 
-	private final static int width = 800;
+	private final static int width = 1200;
 	private final static int height = 500;
 	
 	private Fingerprint print[] = new Fingerprint[2];
@@ -38,7 +38,12 @@ public class Window extends Application {
 		ImageView printView[] = new ImageView[2];
 		for(int i = 0; i < 1; i++){
 			printView[i] = new ImageView(print[i].getSrcImg());
+			ImageView bin = new ImageView(print[i].getBinImg());
+			ImageView thin = new ImageView(print[i].getThinImg());
+			
 			hb.getChildren().add(printView[i]);
+			hb.getChildren().add(bin);
+			hb.getChildren().add(thin);
 		}
 		grid.getChildren().add(hb);
 		
